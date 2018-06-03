@@ -22,8 +22,22 @@
 (re-frame/reg-fx
  ::accept-transaction
  (fn [{:keys [masked-password id on-completed]}]
+  ;; unmasking the password as late as possible to avoid being exposed from app-db
+   (status/approve-sign-request id
+                                (security/unmask masked-password)
+                                0
+                                0
+                                on-completed)))
+
+(re-frame/reg-fx
+ ::accept-transaction-with-changed-gas
+ (fn [{:keys [masked-password id on-completed gas gas-price]}]
    ;; unmasking the password as late as possible to avoid being exposed from app-db
-   (status/approve-sign-requests (list id) (security/unmask masked-password) on-completed)))
+   (status/approve-sign-request id
+                                (security/unmask masked-password)
+                                (int (or gas 0))
+                                (int (or gas-price 0))
+                                on-completed)))
 
 (defn- send-ethers [{:keys [web3 from to value gas gas-price]}]
   (.sendTransaction (.-eth web3)
@@ -284,11 +298,14 @@
 (handlers/register-handler-fx
  :wallet/sign-transaction-modal
  (fn [{db :db} _]
-   (let [{:keys [id password]} (get-in db [:wallet :send-transaction])]
+   (let [{:keys [id password gas gas-price] :as transaction} (get-in db [:wallet :send-transaction])]
+     (js/alert transaction)
      {:db                  (assoc-in db [:wallet :send-transaction :in-progress?] true)
-      ::accept-transaction {:id              id
-                            :masked-password password
-                            :on-completed    on-transactions-modal-completed}})))
+      ::accept-transaction-with-changed-gas {:id              id
+                                             :masked-password password
+                                             :gas             gas
+                                             :gas-price       gas-price
+                                             :on-completed    on-transactions-modal-completed}})))
 
 (defn discard-transaction
   [{:keys [db]}]
