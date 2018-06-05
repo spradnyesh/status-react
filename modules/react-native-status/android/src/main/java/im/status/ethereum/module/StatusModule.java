@@ -503,7 +503,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void approveSignRequest(final String id, final String password, final int gas, final int gasPrice, final Callback callback) {
+    public void approveSignRequest(final String id, final String password, final Callback callback) {
         Log.d(TAG, "approveSignRequest");
         if (!checkAvailability()) {
             callback.invoke(false);
@@ -513,7 +513,44 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                String res = Statusgo.ApproveSignRequest(id, password, gas, gasPrice);
+                String res = Statusgo.ApproveSignRequest(id, password);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    @ReactMethod
+    public void approveSignRequests(final String hashes, final String password, final Callback callback) {
+        Log.d(TAG, "approveSignRequests");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.ApproveSignRequests(hashes, password);
+                callback.invoke(res);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+    public void approveSignRequestWithArgs(final String id, final String password, final int gas, final int gasPrice, final Callback callback) {
+        Log.d(TAG, "approveSignRequestWithArgs");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String res = Statusgo.ApproveSignRequestWithArgs(id, password, gas, gasPrice);
                 callback.invoke(res);
             }
         };

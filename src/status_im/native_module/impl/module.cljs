@@ -118,10 +118,22 @@
     (call-module #(.login status address password on-result))))
 
 (defn approve-sign-request
-  [id password gas gas-price callback]
-  (log/debug :approve-sign-request (boolean status) id gas gas-price)
+  [id password callback]
+  (log/debug :approve-sign-request (boolean status) id)
   (when status
-    (call-module #(.approveSignRequest status id password gas gas-price callback))))
+    (call-module #(.approveSignRequest status id password callback))))
+
+(defn approve-sign-requests
+  [hashes password callback]
+  (log/debug :approve-sign-requests (boolean status) hashes)
+  (when status
+    (call-module #(.approveSignRequest status (types/clj->json hashes) password callback))))
+
+(defn approve-sign-request-with-args
+  [id password gas gas-price callback]
+  (log/debug :approve-sign-request-with-args (boolean status) id gas gas-price)
+  (when status
+    (call-module #(.approveSignRequestWithArgs status id password gas gas-price callback))))
 
 (defn discard-sign-request
   [id]
@@ -260,8 +272,12 @@
     (recover-account passphrase password callback))
   (-login [this address password callback]
     (login address password callback))
-  (-approve-sign-request [this id password gas gas-price callback]
-    (approve-sign-request id password gas gas-price callback))
+  (-approve-sign-request [this id password callback]
+    (approve-sign-request id password callback))
+  (-approve-sign-requests [this hashes password callback]
+    (approve-sign-requests hashes password callback))
+  (-approve-sign-request-with-args [this id password gas gas-price callback]
+    (approve-sign-request-with-args id password gas gas-price callback))
   (-discard-sign-request [this id]
     (discard-sign-request id))
   (-parse-jail [this chat-id file callback]

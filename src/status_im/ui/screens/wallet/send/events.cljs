@@ -25,19 +25,17 @@
   ;; unmasking the password as late as possible to avoid being exposed from app-db
    (status/approve-sign-request id
                                 (security/unmask masked-password)
-                                0
-                                0
                                 on-completed)))
 
 (re-frame/reg-fx
  ::accept-transaction-with-changed-gas
  (fn [{:keys [masked-password id on-completed gas gas-price]}]
    ;; unmasking the password as late as possible to avoid being exposed from app-db
-   (status/approve-sign-request id
-                                (security/unmask masked-password)
-                                (int (or gas 0))
-                                (int (or gas-price 0))
-                                on-completed)))
+   (status/approve-sign-request-with-args id
+                                          (security/unmask masked-password)
+                                          (int (or gas 0))
+                                          (int (or gas-price 0))
+                                          on-completed)))
 
 (defn- send-ethers [{:keys [web3 from to value gas gas-price]}]
   (.sendTransaction (.-eth web3)
@@ -81,7 +79,7 @@
   (or (and to (utils.hex/valid-hex? to)) (and data (not= data "0x"))))
 
 (defn dispatch-transaction-completed [result & [modal?]]
-  (re-frame/dispatch [::transaction-completed {:id (name (key result)) :response (second result)} modal?]))
+  (re-frame/dispatch [::transaction-completed {:id (:id result) :response result} modal?]))
 ;;;; Handlers
 
 (defn set-and-validate-amount-db [db amount symbol decimals]
@@ -119,9 +117,8 @@
                                       :password        nil})
 
 (defn on-transactions-completed [raw-results]
-  (let [results (:results (types/json->clj raw-results))]
-    (doseq [result results]
-      (dispatch-transaction-completed result))))
+  (let [result (types/json->clj raw-results)]
+    (dispatch-transaction-completed result)))
 
 (handlers/register-handler-fx
  :sign-later-from-chat
@@ -245,7 +242,7 @@
 
 (handlers/register-handler-fx
  ::transaction-completed
- (fn [{db :db now :now} [_ {:keys [id response]} modal?]]
+ (fn [{db :db now :now} [_ {:keys [id response] :as params} modal?]]
    (let [{:keys [hash error]} response
          {:keys [method]} (get-in db [:wallet :send-transaction])
          db' (assoc-in db [:wallet :send-transaction :in-progress?] false)]
@@ -266,9 +263,8 @@
           {:dispatch [:navigate-to :wallet-transaction-sent]}))))))
 
 (defn on-transactions-modal-completed [raw-results]
-  (let [results (:results (types/json->clj raw-results))]
-    (doseq [result results]
-      (dispatch-transaction-completed result true))))
+  (let [result (types/json->clj raw-results)]
+    (dispatch-transaction-completed result true)))
 
 (handlers/register-handler-fx
  :wallet/sign-transaction
@@ -299,7 +295,6 @@
  :wallet/sign-transaction-modal
  (fn [{db :db} _]
    (let [{:keys [id password gas gas-price] :as transaction} (get-in db [:wallet :send-transaction])]
-     (js/alert transaction)
      {:db                  (assoc-in db [:wallet :send-transaction :in-progress?] true)
       ::accept-transaction-with-changed-gas {:id              id
                                              :masked-password password
