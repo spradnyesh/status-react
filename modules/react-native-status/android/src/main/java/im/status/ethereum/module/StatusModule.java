@@ -540,6 +540,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         StatusThreadPoolExecutor.getInstance().execute(r);
     }
 
+    @ReactMethod
     public void approveSignRequestWithArgs(final String id, final String password, final int gas, final int gasPrice, final Callback callback) {
         Log.d(TAG, "approveSignRequestWithArgs");
         if (!checkAvailability()) {
