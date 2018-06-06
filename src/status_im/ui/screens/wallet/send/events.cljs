@@ -32,11 +32,11 @@
  ::accept-transaction-with-changed-gas
  (fn [{:keys [masked-password id on-completed gas gas-price]}]
    ;; unmasking the password as late as possible to avoid being exposed from app-db
-   (log/info :PAPAYA gas gas-price)
+   (log/info :PAPAYA gas gas)
    (status/approve-sign-request-with-args id
                                           (security/unmask masked-password)
-                                          (or (long gas) 0)
-                                          (or (long gas-price) 0)
+                                          (money/to-fixed gas)
+                                          (money/to-fixed gas-price)
                                           on-completed)))
 
 (defn- send-ethers [{:keys [web3 from to value gas gas-price]}]
