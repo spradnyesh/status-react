@@ -15,7 +15,8 @@
             [status-im.utils.types :as types]
             [status-im.utils.utils :as utils]
             [status-im.constants :as constants]
-            [status-im.transport.utils :as transport.utils]))
+            [status-im.transport.utils :as transport.utils]
+            [taoensso.timbre :as log]))
 
 ;;;; FX
 
@@ -31,10 +32,11 @@
  ::accept-transaction-with-changed-gas
  (fn [{:keys [masked-password id on-completed gas gas-price]}]
    ;; unmasking the password as late as possible to avoid being exposed from app-db
+   (log/info :PAPAYA gas gas-price)
    (status/approve-sign-request-with-args id
                                           (security/unmask masked-password)
-                                          (int (or gas 0))
-                                          (int (or gas-price 0))
+                                          (or (long gas) 0)
+                                          (or (long gas-price) 0)
                                           on-completed)))
 
 (defn- send-ethers [{:keys [web3 from to value gas gas-price]}]
