@@ -5,7 +5,7 @@ import subprocess
 import asyncio
 
 from support.message_reliability_report import create_one_to_one_chat_report, create_public_chat_report
-from support.network_api import NetworkApi
+from support.api.network_api import NetworkApi
 from os import environ
 from appium import webdriver
 from abc import ABCMeta, abstractmethod
