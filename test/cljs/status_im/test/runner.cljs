@@ -12,6 +12,7 @@
             [status-im.test.bots.events]
             [status-im.test.models.mailserver]
             [status-im.test.models.bootnode]
+            [status-im.test.models.contact]
             [status-im.test.transport.core]
             [status-im.test.chat.models]
             [status-im.test.chat.models.input]
@@ -57,7 +58,7 @@
  'status-im.test.profile.events
  'status-im.test.data-store.realm.core
  'status-im.test.models.mailserver
- 'status-im.test.models.bootnode
+ 'status-im.test.models.contact
  'status-im.test.bots.events
  'status-im.test.transport.core
  'status-im.test.wallet.subs
