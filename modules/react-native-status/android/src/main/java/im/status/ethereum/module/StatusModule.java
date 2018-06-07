@@ -522,25 +522,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void approveSignRequests(final String hashes, final String password, final Callback callback) {
-        Log.d(TAG, "approveSignRequests");
-        if (!checkAvailability()) {
-            callback.invoke(false);
-            return;
-        }
-
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String res = Statusgo.ApproveSignRequests(hashes, password);
-                callback.invoke(res);
-            }
-        };
-
-        StatusThreadPoolExecutor.getInstance().execute(r);
-    }
-
-    @ReactMethod
     public void approveSignRequestWithArgs(final String id, final String password, final String gas, final String gasPrice, final Callback callback) {
         Log.d(TAG, "approveSignRequestWithArgs " + gas + " " + gasPrice);
         if (!checkAvailability()) {

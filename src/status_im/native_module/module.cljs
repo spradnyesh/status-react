@@ -9,7 +9,6 @@
   (-recover-account [this passphrase password callback])
   (-login [this address password callback])
   (-approve-sign-request [this id password callback])
-  (-approve-sign-requests [this hashes password callback])
   (-approve-sign-request-with-args [this id password gas gas-price callback])
   (-discard-sign-request [this id])
   (-parse-jail [this chat-id file callback])

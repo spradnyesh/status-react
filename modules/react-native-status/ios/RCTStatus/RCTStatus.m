@@ -309,19 +309,6 @@ RCT_EXPORT_METHOD(login:(NSString *)address
 }
 
 ////////////////////////////////////////////////////////////////////
-#pragma mark - Approve Sign Requests
-//////////////////////////////////////////////////////////////////// approveSignRequests
-RCT_EXPORT_METHOD(approveSignRequests:(NSString *)hashes
-                  password:(NSString *)password
-                  callback:(RCTResponseSenderBlock)callback) {
-#if DEBUG
-    NSLog(@"ApproveSignRequests() method called");
-#endif
-    char * result = ApproveSignRequests((char *) [hashes UTF8String], (char *) [password UTF8String]);
-    callback(@[[NSString stringWithUTF8String: result]]);
-}
-
-////////////////////////////////////////////////////////////////////
 #pragma mark - Approve Sign Request
 //////////////////////////////////////////////////////////////////// approveSignRequests
 RCT_EXPORT_METHOD(approveSignRequest:(NSString *)id
