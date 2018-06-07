@@ -130,7 +130,7 @@
                             (status-im.utils.utils/set-timeout
                              (fn []
                                (re-frame/dispatch [:mark-unseen chat-id]))
-                             300))}
+                             100))}
     (if (empty? messages)
       [empty-chat-container chat]
       [list/flat-list {:data                      messages
